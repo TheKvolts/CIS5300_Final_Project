@@ -37,7 +37,7 @@ def train_majority_baseline(train_file):
         majority_class: Integer label (0, 1, or 2) of the most common class
     """
     train_df = pd.read_csv(train_file)
-    class_counts = Counter(train_df['Label'])
+    class_counts = Counter(train_df['label'])
     majority_class = class_counts.most_common(1)[0][0]
     
     print("=" * 70)
@@ -76,7 +76,7 @@ def predict_majority_baseline(test_file, majority_class, prefix):
     predictions = [majority_class] * len(test_df)
     
     # Count how many of each true label exist in test set
-    test_class_counts = Counter(test_df['Label'])
+    test_class_counts = Counter(test_df['label'])
     
     print(f"\nTest Set Class Distribution (True Labels):")
     for label, count in sorted(test_class_counts.items()):
@@ -100,15 +100,14 @@ def predict_majority_baseline(test_file, majority_class, prefix):
     os.makedirs(prefix, exist_ok=True)
     
     # Create 'test_sentence_label.csv' (gold labels) - same format as strong-baseline
-    test_sentence_label_df = test_df[['Sentence', 'Label']].copy()
+    test_sentence_label_df = test_df[['Sentence', 'label']].copy()
+    test_sentence_label_df.rename(columns={'label': 'Label'}, inplace=True)
     test_sentence_label_df.to_csv(f'{prefix}/test_sentence_label.csv', index=False)
     print(f"\ntest_sentence_label.csv created successfully.")
     
     # Create 'simple_baseline_test_predictions.csv' (predictions) - same format as strong-baseline
-    simple_baseline_predictions_df = pd.DataFrame({
-        'Sentence': test_df['Sentence'],
-        'Label': predictions
-    })
+    simple_baseline_predictions_df = test_df[['Sentence']].copy()
+    simple_baseline_predictions_df['Label'] = predictions
     simple_baseline_predictions_df.to_csv(f'{prefix}/simple_baseline_test_predictions.csv', index=False)
     print(f"simple_baseline_test_predictions.csv created with integer labels successfully.")
     print(f"Total predictions: {len(predictions)} (all class {majority_class})")
