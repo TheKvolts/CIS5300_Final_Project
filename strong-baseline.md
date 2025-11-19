@@ -23,22 +23,76 @@ These files should be used by `scoring.py`.
 python scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/test_sentence_label.csv
 ```
 
-## Reported baseline scores (test set: 585 examples)
-Overall metrics (weighted):
-- Accuracy: 0.7436 (74.36%)
-- Precision (weighted): 0.7720 (77.20%)
-- Recall (weighted): 0.7436 (74.36%)
-- F1-Score (weighted): 0.7508 (75.08%)
+## GENERATING PREDICTIONS
 
-Classification report:
+**Note:** Unlike the simple baseline, FinBERT is a pre-trained transformer model specifically fine-tuned on financial text. It **analyzes the actual content** of each sentence to predict sentiment, making it a strong baseline for financial sentiment analysis.
+
+Test Set Class Distribution (True Labels):
 ```
-         precision    recall  f1-score   support
+  Negative (0):   100 (17.09%)
+   Neutral (1):   284 (48.55%)
+  Positive (2):   201 (34.36%)
+```
 
-   negative       0.52      0.78      0.62       100
-    neutral       0.78      0.73      0.75       284
-   positive       0.89      0.75      0.81       201
+### What FinBERT Gets RIGHT:
+- **78 out of 100 Negative** examples correctly identified (78% recall)
+- **207 out of 284 Neutral** examples correctly identified (72.89% recall)
+- **150 out of 201 Positive** examples correctly identified (74.63% recall)
+- **Total: 435 out of 585** examples correctly predicted (74.36% accuracy)
 
-   accuracy                           0.74       585
-  macro avg       0.73      0.75      0.73       585
-weighted avg       0.77      0.74      0.75       585
+### What FinBERT Struggles With:
+- **Negative class precision (52%):** Out of 150 predictions as Negative, only 78 were actually Negative
+  - 61 Neutral examples misclassified as Negative
+  - 11 Positive examples misclassified as Negative
+
+- **Neutral confusion:**
+  - 20 Negative examples misclassified as Neutral
+  - 40 Positive examples misclassified as Neutral
+
+- **Positive class strength:** Best performing class with 89.29% precision and 74.63% recall
+
+### Performance Comparison:
+Compared to the simple baseline (48.55% accuracy), FinBERT achieves **25.81 percentage points improvement** (74.36% accuracy), demonstrating the value of using a domain-specific pre-trained model that actually analyzes financial text content.
+
+## Raw Output: python scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/test_sentence_label.csv
+
+```
+============================================================
+SENTIMENT ANALYSIS EVALUATION RESULTS
+============================================================
+
+Total samples: 585
+
+Accuracy: 0.7436
+
+------------------------------------------------------------
+AGGREGATE METRICS
+------------------------------------------------------------
+Macro-averaged Precision:  0.7294
+Macro-averaged Recall:     0.7517
+Macro-averaged F1:         0.7295
+
+Weighted-averaged Precision: 0.7720
+Weighted-averaged Recall:    0.7436
+Weighted-averaged F1:        0.7508
+
+------------------------------------------------------------
+PER-CLASS METRICS
+------------------------------------------------------------
+Class        Precision    Recall       F1           Support
+------------------------------------------------------------
+Negative     0.5200       0.7800       0.6240       100
+Neutral      0.7753       0.7289       0.7514       284
+Positive     0.8929       0.7463       0.8130       201
+
+------------------------------------------------------------
+CONFUSION MATRIX
+------------------------------------------------------------
+         Predicted:
+           Neg    Neu    Pos
+Actual:
+  Neg       78     20      2
+  Neu       61    207     16
+  Pos       11     40    150
+============================================================
 ```
