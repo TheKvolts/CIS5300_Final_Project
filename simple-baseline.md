@@ -1,4 +1,3 @@
-# Simple Baseline (simple-baseline.md)
 ## Overview
 This baseline uses a majority class predictor that predicts the most frequent sentiment class from the training data for all test examples. It **completely ignores the input text** and always predicts the same class, regardless of the headline content. This serves as a simple, lower-bound baseline to establish the minimum performance threshold for the task.
 

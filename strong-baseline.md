@@ -1,4 +1,3 @@
-# Strong Baseline (strong-baseline.md)
 ## Overview
 This baseline uses the [FinBERT](https://huggingface.co/ProsusAI/finbert) text-classification pipeline from HuggingFace to predict financial sentiment (negative / neutral / positive). It serves as a strong, reproducible baseline for the task and includes inference and evaluation instructions.
 
