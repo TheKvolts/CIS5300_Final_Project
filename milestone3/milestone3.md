@@ -1,5 +1,6 @@
 ## Extension Description and Empirical Evaluation
 
+
 To extend the pretrained FinBERT sentiment analysis model, we fine-tuned the model to the FIQA + Financial PhraseBank Dataset. This fine-tuning process resulted in strong empirical performance, achieving **77.26% accuracy**, **0.7456 macro-F1**, and robust class-wise metrics—particularly for the Neutral and Positive categories. The overall results and confusion matrix demonstrate that the adapted FinBERT model generalizes effectively and improves upon the capabilities of the original pretrained version for this task. Refer to milestone 2, simple-baseline.md and strong-baseline.md for reference.
 
 
@@ -38,3 +39,6 @@ Negative      69       21       10
  Neutral      43      215       26
 Positive      15       18      168
 ```
+
+## How to run the code
+The code for finetuning the model is in the Google Colab notebook. HuggingFace's transformer package was utilized for training. The notebook first explores characteristics of the dataset and then defines the different evaluation functions used. Running each cell sequentially will lead to model training and the test dataset results will be displayed in the cell output.
