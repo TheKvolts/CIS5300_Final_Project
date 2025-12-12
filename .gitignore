@@ -5,3 +5,5 @@ env/
 .env/
 ENV/
 .ENV/
+finetune-llm-ec2/data
+finetune-llm-ec2/scripts/command.txt
