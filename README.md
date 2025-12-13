@@ -180,7 +180,7 @@ Per-class performance:
 We have implemented a fine-tuned **Llama 3.1 8B** model for classifying the sentiment of news headlines using QLoRA.
 
 ### Directory Structure
-The fine-tuning logic is located in `finetune-llm-ec2/`:
+The fine-tuning logic is located in `extension3-finetune-llama/`:
 - `data/`: Contains converted JSONL datasets.
 - `scripts/`: Training and inference scripts.
 - `prepare_data.py`: Converts raw CSVs to JSONL format.
@@ -189,23 +189,23 @@ The fine-tuning logic is located in `finetune-llm-ec2/`:
 
 1.  **Prepare Data**:
     ```bash
-    python finetune-llm-ec2/prepare_data.py
+    python extension3-finetune-llama/prepare_data.py
     ```
 
 2.  **Train Model**:
     ```bash
-    python finetune-llm-ec2/scripts/train.py --hf_token "YOUR_TOKEN" --epochs 3
+    python extension3-finetune-llama/scripts/train.py --hf_token "YOUR_TOKEN" --epochs 3
     ```
     This saves the adapter to `./final_adapter`.
 
 3.  **Run Inference**:
     Evaluate on test data:
     ```bash
-    python finetune-llm-ec2/scripts/inference.py --test_file "finetune-llm-ec2/data/test.jsonl"
+    python extension3-finetune-llama/scripts/inference.py --test_file "extension3-finetune-llama/data/test.jsonl"
     ```
     or test a single headline:
     ```bash
-    python finetune-llm-ec2/scripts/inference.py --headline "Example news headline..."
+    python extension3-finetune-llama/scripts/inference.py --headline "Example news headline..."
     ```
 
 ---
