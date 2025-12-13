@@ -24,18 +24,20 @@ To set up the project environment:
    pip install -r requirements.txt
    ```
 
+---
+
 ## Simple Baseline
 This baseline uses a majority class predictor that predicts the most frequent sentiment class from the training data for all test examples. It **completely ignores the input text** and always predicts the same class, regardless of the headline content. This serves as a simple, lower-bound baseline to establish the minimum performance threshold for the task.
 
 - Test set size: 585 examples. (refer to data.md)
 
-Sentence                                                                 | Sentiment | Label |
+| Sentence                                                                 | Sentiment | Label |
 |--------------------------------------------------------------------------|:---------:|:-----:|
 | The inventors are Mukkavilli Krishna Kiran, Sabharwal Ashutosh and Aazhang Behnaam. | neutral   |   1   |
 | $IBIO up 10% in premarket ready for lift off                             | positive  |   2   |
 
-## Running the script
-```
+### Running the script
+```bash
 python simple-baseline.py
 ```
 
@@ -44,22 +46,24 @@ This creates two files with two columns- Sentence and Label:
 - test_sentence_label.csv
 
 These files should be used by `scoring.py`.
-```
+```bash
 python scoring.py milestone2/simple_baseline_test_predictions.csv milestone2/test_sentence_label.csv
 ```
+
+---
 
 ## Strong Baseline
 This baseline uses the [FinBERT](https://huggingface.co/ProsusAI/finbert) text-classification pipeline from HuggingFace to predict financial sentiment (negative / neutral / positive). It serves as a strong, reproducible baseline for the task and includes inference and evaluation instructions.
 
 - Test set size: 585 examples. (refer to data.md)
 
-Sentence                                                                 | Sentiment | Label |
+| Sentence                                                                 | Sentiment | Label |
 |--------------------------------------------------------------------------|:---------:|:-----:|
 | The inventors are Mukkavilli Krishna Kiran, Sabharwal Ashutosh and Aazhang Behnaam. | neutral   |   1   |
 | $IBIO up 10% in premarket ready for lift off                             | positive  |   2   |
 
-## Running the script
-```
+### Running the script
+```bash
 python strong-baseline.py
 ```
 
@@ -68,11 +72,14 @@ This creates two files with two columns- Sentence and Label:
 - test_sentence_label.csv
 
 These files should be used by `scoring.py`.
-```
+```bash
 python scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/test_sentence_label.csv
 ```
 
-## Extension1: Fine-Tuned FinBert
+---
+
+## Extension 1: Fine-Tuned FinBERT (Sentiment Classification)
+
 ### How to Use the Code
 
 The fine-tuning implementation is provided in `milestone3_finetune_extension.ipynb`, a Google Colab notebook which our group ran using Google Colab and Google Drive. To run the code:
@@ -106,9 +113,70 @@ For Milestone 3, we extended our Milestone 2 strong baseline (pre-trained FinBER
 
 Refer to milestone 2, simple-baseline.md and strong-baseline.md for reference.
 
+---
 
+## Extension 2: Aspect-Based Sentiment Analysis (ABSA)
 
-## Extension2: Fine-Tuned Llama Model
+### Overview
+
+This extension applies our FinBERT fine-tuning approach to a new task: **Aspect Classification** using the FiQA dataset from WWW'18. Instead of predicting sentiment (positive/neutral/negative), we classify financial text into one of four aspect categories:
+
+| Aspect | Description | Training Examples |
+|--------|-------------|-------------------|
+| Corporate | M&A, strategy, leadership, legal | 367 (38.2%) |
+| Economy | Macro trends, policy | 4 (0.4%) |
+| Market | Indices, sectors, broad market movements | 26 (2.7%) |
+| Stock | Price action, volatility, individual stocks | 562 (58.5%) |
+
+This extension is motivated by Yang et al. (2018), "Financial Aspect-Based Sentiment Analysis using Deep Representations," which demonstrated that aspect classification enables more granular analysis of financial text.
+
+### How to Use the Code
+
+The implementation is provided in `milestone4_absa_extension.ipynb`, a Google Colab notebook.
+
+1. **Setup**: Open the notebook in Google Colab. The notebook will automatically install required packages and load the FiQA dataset from HuggingFace (`pauri32/fiqa-2018`).
+
+2. **No Local Data Required**: Unlike the sentiment task, the FiQA dataset is loaded directly from HuggingFace:
+   ```python
+   from datasets import load_dataset
+   fiqa_dataset = load_dataset("pauri32/fiqa-2018")
+   ```
+
+3. **Execution**: Run all cells sequentially. The notebook will:
+   - Load and preprocess the FiQA dataset
+   - Extract Level-1 aspect labels from hierarchical aspect annotations
+   - Compute class weights to handle extreme imbalance
+   - Fine-tune FinBERT with class-weighted loss
+   - Evaluate on the test set
+   - Save predictions and confusion matrix to `output/`
+
+4. **Output Files**: After execution:
+   - `output/fiqa_aspect_distribution.png` - Class distribution visualization
+   - `output/fiqa_aspect_confusion_matrix.png` - Test set confusion matrix
+   - `output/fiqa_aspect_predictions.csv` - Model predictions
+
+### Results
+
+| Metric | Score |
+|--------|-------|
+| Accuracy | 88.59% |
+| Macro F1 | 0.5429 |
+| Weighted F1 | 0.8688 |
+
+Per-class performance:
+| Aspect | Precision | Recall | F1-Score | Support |
+|--------|-----------|--------|----------|---------|
+| Corporate | 0.91 | 0.94 | 0.92 | 64 |
+| Economy | 0.00 | 0.00 | 0.00 | 3 |
+| Market | 0.50 | 0.25 | 0.33 | 8 |
+| Stock | 0.89 | 0.95 | 0.92 | 74 |
+
+**Key Findings**: The model achieves strong performance on majority classes (Corporate: 0.92 F1, Stock: 0.92 F1) but struggles with minority classes due to extreme data imbalance. Economy (only 4 training examples) was never predicted correctly, demonstrating the fundamental limitation that class weighting cannot overcome severe data scarcity.
+
+---
+
+## Extension 3: Fine-Tuned Llama Model
+
 We have implemented a fine-tuned **Llama 3.1 8B** model for classifying news sources (Fox News vs. NBC News) using QLoRA. For a high-level overview of our approach, see [APPROACH.md](finetune-llm-ec2/APPROACH.md).
 
 ### Directory Structure
@@ -130,7 +198,7 @@ The fine-tuning logic is located in `finetune-llm-ec2/`:
     ```
     This saves the adapter to `./final_adapter`.
 
-3.  **Run Inquiry**:
+3.  **Run Inference**:
     Evaluate on test data:
     ```bash
     python finetune-llm-ec2/scripts/inference.py --test_file "finetune-llm-ec2/data/test.jsonl"
@@ -140,3 +208,24 @@ The fine-tuning logic is located in `finetune-llm-ec2/`:
     python finetune-llm-ec2/scripts/inference.py --headline "Example news headline..."
     ```
 
+---
+
+## Results Summary
+
+| Model | Task | Accuracy | Macro F1 | Weighted F1 |
+|-------|------|----------|----------|-------------|
+| Simple Baseline (Majority Class) | Sentiment | 48.55% | 0.2179 | 0.3173 |
+| Pre-trained FinBERT | Sentiment | 74.36% | 0.7295 | 0.7508 |
+| Standard Fine-tuned FinBERT | Sentiment | 77.26% | 0.7456 | 0.7770 |
+| **Class-Weighted Fine-tuned FinBERT** | **Sentiment** | **80.17%** | **0.7868** | **0.8030** |
+| **Class-Weighted FinBERT** | **Aspect (ABSA)** | **88.59%** | **0.5429** | **0.8688** |
+
+---
+
+## References
+
+- Yang, S., Rosenfeld, J., & Makutonin, J. (2018). "Financial Aspect-Based Sentiment Analysis using Deep Representations." arXiv:1808.07931.
+- Araci, D. (2019). "FinBERT: Financial Sentiment Analysis with Pre-trained Language Models." arXiv:1908.10063.
+- Maia, M., et al. (2018). "WWW'18 Open Challenge: Financial Opinion Mining and Question Answering." Companion Proceedings of The Web Conference 2018.
+- FiQA Dataset: [pauri32/fiqa-2018](https://huggingface.co/datasets/pauri32/fiqa-2018)
+- FinBERT Model: [ProsusAI/finbert](https://huggingface.co/ProsusAI/finbert)

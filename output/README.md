@@ -1,6 +1,20 @@
 ## Evaluation Metrics
 
-This document describes the evaluation metrics used to assess the performance of our financial sentiment analysis model. The task is a **3-class sentiment classification** problem with classes: negative (0), neutral (1), and positive (2).
+This document describes the evaluation metrics used to assess the performance of our financial sentiment analysis model and our aspect-based sentiment analysis (ABSA) extension. 
+
+---
+
+## Task 1: Sentiment Classification (3-class)
+
+The primary task is a **3-class sentiment classification** problem with classes: negative (0), neutral (1), and positive (2).
+
+## Task 2: Aspect Classification (4-class) - ABSA Extension
+
+The extension task is a **4-class aspect classification** problem using the FiQA dataset, with classes: Corporate (0), Economy (1), Market (2), and Stock (3).
+
+---
+
+## Metrics Overview
 
 We employ several standard metrics for multi-class classification tasks:
 
@@ -42,9 +56,9 @@ $$\text{Weighted-F1} = \sum_{c=1}^{C} \frac{n_c}{n} \cdot F1_c$$
 
 ## Primary Metric
 
-For this sentiment analysis task, we use **Macro-averaged F1-score** as our primary evaluation metric because:
+For both tasks, we use **Macro-averaged F1-score** as our primary evaluation metric because:
 1. It balances precision and recall
-2. It treats all sentiment classes equally (important for financial analysis where all sentiments matter)
+2. It treats all classes equally (important for financial analysis where all sentiments/aspects matter)
 3. It is robust to class imbalance
 
 We also report **Accuracy** and **Weighted F1-score** for completeness.
@@ -186,7 +200,7 @@ python scoring.py predictions_std.csv data/test/test.csv --format json --output 
 
 ### Label Mapping Reference
 
-The preprocessing script uses this standard mapping (matching your dataset):
+**Sentiment Classification (Task 1):**
 
 | String Label | Numeric Value | Meaning |
 |--------------|---------------|---------|
@@ -194,181 +208,219 @@ The preprocessing script uses this standard mapping (matching your dataset):
 | `"neutral"` | `1` | Neutral sentiment |
 | `"positive"` | `2` | Positive sentiment |
 
-This ensures consistency between finBERT output and your gold standard labels.
+**Aspect Classification (Task 2 - ABSA Extension):**
 
+| String Label | Numeric Value | Meaning |
+|--------------|---------------|---------|
+| `"Corporate"` | `0` | Corporate-related aspects (M&A, strategy, leadership) |
+| `"Economy"` | `1` | Economy-related aspects (macro trends, policy) |
+| `"Market"` | `2` | Market-related aspects (indices, sectors) |
+| `"Stock"` | `3` | Stock-related aspects (price action, volatility) |
 
 ---
 
+# Results
 
-## Simple Baseline Result
-### Overview
+## Task 1: Sentiment Classification
+
+### Simple Baseline Result
+#### Overview
 The simple baseline predicts the majority class (Neutral) for all test examples, disregarding the input text. This establishes a minimum performance threshold (lower bound) for the task.
 
-### Performance (Weighted)
-- **Accuracy:** 48.55%
-- **F1-Score:** 31.73%
+#### Performance
+| Metric | Score |
+|--------|-------|
+| Accuracy | 48.55% |
+| Macro F1 | 0.2179 |
+| Weighted F1 | 0.3173 |
 
 Classification report:
 ```
-         precision    recall  f1-score   support
+              precision    recall  f1-score   support
 
-   negative       0.00      0.00      0.00       100
-    neutral       0.49      1.00      0.65       284
-   positive       0.00      0.00      0.00       201
+    Negative       0.00      0.00      0.00       100
+     Neutral       0.49      1.00      0.65       284
+    Positive       0.00      0.00      0.00       201
 
-   accuracy                           0.49       585
-  macro avg       0.16      0.33      0.22       585
+    accuracy                           0.49       585
+   macro avg       0.16      0.33      0.22       585
 weighted avg       0.24      0.49      0.32       585
 ```
 
 **Explanation:** The baseline predicts Neutral (class 1) for all 585 test examples, which is the majority class from the training data (54.29% of training examples). It correctly predicts 284 out of 585 examples (48.55% accuracy), which equals the proportion of Neutral examples in the test set. All Negative and Positive examples are incorrectly predicted as Neutral, resulting in 0.00 precision/recall/F1 for those classes.
 
+---
 
-## Raw Output (simple-baseline.py)
+### Strong Baseline Result (Pre-trained FinBERT)
+#### Overview
+The strong baseline uses FinBERT, a transformer model pre-trained on financial text. Unlike the simple baseline, it analyzes the semantic content of the input without any task-specific fine-tuning.
 
+#### Performance
+| Metric | Score |
+|--------|-------|
+| Accuracy | 74.36% |
+| Macro F1 | 0.7295 |
+| Weighted F1 | 0.7508 |
+
+Classification report:
 ```
-======================================================================
-SIMPLE BASELINE: MAJORITY CLASS PREDICTOR
-======================================================================
+              precision    recall  f1-score   support
 
-IMPORTANT: This baseline ignores headline content completely!
-   It always predicts the same class for everything.
+    Negative       0.52      0.78      0.62       100
+     Neutral       0.78      0.73      0.75       284
+    Positive       0.89      0.75      0.81       201
 
-Training Set Class Distribution:
-  Negative (0):   679 (14.53%)
-   Neutral (1):  2537 (54.29%) ← MAJORITY (will predict this for ALL test examples)
-  Positive (2):  1457 (31.18%)
-
-Majority Class: 1 (Neutral)
-
-Strategy: Predict 'Neutral' for EVERY test example
-   (even for obviously Negative or Positive headlines!)
-
-======================================================================
-GENERATING PREDICTIONS
-======================================================================
-
-Test Set Class Distribution (True Labels):
-  Negative (0):   100 (17.09%)
-   Neutral (1):   284 (48.55%)
-  Positive (2):   201 (34.36%)
-
-### Error Analysis
-- **Systematic Errors:** All Negative (100) and Positive (201) examples are misclassified as Neutral.
-- **Correct Predictions:** Only the 284 actual Neutral examples are classified correctly (due to the majority class strategy).
-
-**Expected Accuracy:** 48.55% (284/585)
-
-test_sentence_label.csv created successfully.
-simple_baseline_test_predictions.csv created with integer labels successfully.
-Total predictions: 585 (all class 1)
+    accuracy                           0.74       585
+   macro avg       0.73      0.75      0.73       585
+weighted avg       0.77      0.74      0.75       585
 ```
 
-
-## Raw Output: python scoring.py milestone2/simple_baseline_test_predictions.csv milestone2/test_sentence_label.csv
-
+Confusion Matrix:
 ```
-============================================================
-SENTIMENT ANALYSIS EVALUATION RESULTS
-============================================================
-
-Total samples: 585
-
-Accuracy: 0.4855
-
-------------------------------------------------------------
-AGGREGATE METRICS
-------------------------------------------------------------
-Macro-averaged Precision:  0.1618
-Macro-averaged Recall:     0.3333
-Macro-averaged F1:         0.2179
-
-Weighted-averaged Precision: 0.2357
-Weighted-averaged Recall:    0.4855
-Weighted-averaged F1:        0.3173
-
-------------------------------------------------------------
-PER-CLASS METRICS
-------------------------------------------------------------
-Class        Precision    Recall       F1           Support     
-------------------------------------------------------------
-Negative     0.0000       0.0000       0.0000       100         
-Neutral      0.4855       1.0000       0.6536       284         
-Positive     0.0000       0.0000       0.0000       201         
-
-------------------------------------------------------------
-CONFUSION MATRIX
-------------------------------------------------------------
-         Predicted:
-           Neg    Neu    Pos
-Actual:
-  Neg        0    100      0
-  Neu        0    284      0
-  Pos        0    201      0
-```
-
-## Strong Baseline Result
-### Overview
-The strong baseline uses FinBERT, a transformer model pre-trained on financial text. Unlike the simple baseline, it analyzes the semantic content of the input.
-
-### Performance Analysis
-- **Overall Accuracy:** 74.36% (435/585 correct).
-- **Positive Sentiment:** Highest performance (Precision: 89.29%, Recall: 74.63%).
-- **Negative Sentiment:** High recall (78%) but lower precision (52%).
-- **Neutral Sentiment:** Solid recall (72.89%) and precision (77.53%).
-
-### Areas for Improvement
-- **Precision in Negative Class:** Significant over-prediction of Negative sentiment (low precision: 52%).
-- **Class Confusion:** Neutral examples are frequently misclassified as Negative (61 instances), and Positive examples as Neutral (40 instances).
-
-### Comparison
-FinBERT achieves a **25.8% improvement** over the simple baseline, confirming the effectiveness of domain-specific pre-training.
-
-## Raw Output: python scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/test_sentence_label.csv
-
-```
-============================================================
-SENTIMENT ANALYSIS EVALUATION RESULTS
-============================================================
-
-Total samples: 585
-
-Accuracy: 0.7436
-
-------------------------------------------------------------
-AGGREGATE METRICS
-------------------------------------------------------------
-Macro-averaged Precision:  0.7294
-Macro-averaged Recall:     0.7517
-Macro-averaged F1:         0.7295
-
-Weighted-averaged Precision: 0.7720
-Weighted-averaged Recall:    0.7436
-Weighted-averaged F1:        0.7508
-
-------------------------------------------------------------
-PER-CLASS METRICS
-------------------------------------------------------------
-Class        Precision    Recall       F1           Support
-------------------------------------------------------------
-Negative     0.5200       0.7800       0.6240       100
-Neutral      0.7753       0.7289       0.7514       284
-Positive     0.8929       0.7463       0.8130       201
-
-------------------------------------------------------------
-CONFUSION MATRIX
-------------------------------------------------------------
          Predicted:
            Neg    Neu    Pos
 Actual:
   Neg       78     20      2
   Neu       61    207     16
   Pos       11     40    150
-============================================================
 ```
 
+**Analysis:** FinBERT achieves a **25.8% improvement** over the simple baseline, confirming the effectiveness of domain-specific pre-training. Main weakness: over-prediction of Negative sentiment (low precision: 52%).
 
+---
 
+### MS3 Extension 1: Standard Fine-tuned FinBERT
+#### Overview
+Fine-tuning FinBERT on our training dataset with standard cross-entropy loss.
+
+#### Performance
+| Metric | Score |
+|--------|-------|
+| Accuracy | 77.26% |
+| Macro F1 | 0.7456 |
+| Weighted F1 | 0.7770 |
+
+**Improvement over Strong Baseline:** +2.90% accuracy, +1.61 percentage points Macro F1.
+
+---
+
+### MS3 Extension 2: Class-Weighted Fine-tuned FinBERT
+#### Overview
+Fine-tuning FinBERT with inverse frequency class weighting to address class imbalance (Negative: 2.29, Neutral: 0.61, Positive: 1.07).
+
+#### Performance
+| Metric | Score |
+|--------|-------|
+| Accuracy | 80.17% |
+| Macro F1 | 0.7868 |
+| Weighted F1 | 0.8030 |
+
+Per-class F1 comparison:
+| Class | Standard Fine-tuned | Class-Weighted | Change |
+|-------|---------------------|----------------|--------|
+| Negative | 0.6079 | 0.6996 | +0.0917 |
+| Neutral | 0.7993 | 0.7951 | -0.0042 |
+| Positive | 0.8296 | 0.8656 | +0.0360 |
+
+**Improvement over Strong Baseline:** +5.81% accuracy, +5.73 percentage points Macro F1.
+
+**Key Finding:** Class weighting dramatically improves minority class performance, with Negative F1 improving by +9.17 percentage points.
+
+---
+
+## Task 2: Aspect Classification (ABSA Extension)
+
+### Overview
+This extension applies our approach to a new task: **Aspect-Based Sentiment Analysis (ABSA)** using the FiQA dataset from WWW'18. Instead of predicting sentiment, we classify financial text into one of four aspect categories.
+
+This extension is motivated by Yang et al. (2018), "Financial Aspect-Based Sentiment Analysis using Deep Representations," which demonstrated that aspect classification enables more granular analysis of financial text.
+
+### Dataset: FiQA
+| Split | Examples |
+|-------|----------|
+| Train | 959 |
+| Validation | 102 |
+| Test | 149 |
+
+**Class Distribution (Training Set):**
+| Aspect | Count | Percentage |
+|--------|-------|------------|
+| Stock | 562 | 58.5% |
+| Corporate | 367 | 38.2% |
+| Market | 26 | 2.7% |
+| Economy | 4 | 0.4% |
+
+**Note:** Extreme class imbalance—Economy has only 4 training examples.
+
+### Class Weights Applied
+| Aspect | Weight |
+|--------|--------|
+| Corporate | 0.6533 |
+| Economy | 59.9375 |
+| Market | 9.2212 |
+| Stock | 0.4266 |
+
+### Results: Class-Weighted FinBERT for Aspect Classification
+
+#### Performance
+| Metric | Score |
+|--------|-------|
+| Accuracy | 88.59% |
+| Macro F1 | 0.5429 |
+| Weighted F1 | 0.8688 |
+
+Classification report:
+```
+              precision    recall  f1-score   support
+
+   Corporate       0.91      0.94      0.92        64
+     Economy       0.00      0.00      0.00         3
+      Market       0.50      0.25      0.33         8
+       Stock       0.89      0.95      0.92        74
+
+    accuracy                           0.89       149
+   macro avg       0.57      0.53      0.54       149
+weighted avg       0.86      0.89      0.87       149
+```
+
+Confusion Matrix:
+```
+              Predicted:
+              Corporate  Economy  Market  Stock
+Actual:
+  Corporate        60        0       0       4
+    Economy         1        0       2       0
+     Market         1        0       2       5
+      Stock         4        0       0      70
+```
+
+### Analysis
+
+**Strengths:**
+- High overall accuracy (88.59%) demonstrates successful transfer of FinBERT to aspect classification
+- Corporate (F1: 0.92) and Stock (F1: 0.92) classes perform excellently
+- These two majority classes comprise 93% of the test set
+
+**Limitations:**
+- Economy F1: 0.00 — the model never predicted Economy (only 4 training examples made this class unlearnable)
+- Market F1: 0.33 — only 2 of 8 test examples predicted correctly
+- Macro F1 (0.54) is dragged down by minority class failures
+
+**Key Insight:** This result validates the motivation from Yang et al. (2018) for using transfer learning on small, domain-specific datasets. With only 959 training examples and extreme class imbalance, traditional approaches would struggle. Our class-weighted FinBERT achieves strong performance on majority classes while revealing the fundamental limitation: no amount of class weighting can overcome having only 4 training examples for a class.
+
+---
+
+## Summary: All Results
+
+| Model | Task | Accuracy | Macro F1 | Weighted F1 |
+|-------|------|----------|----------|-------------|
+| Simple Baseline (Majority Class) | Sentiment | 48.55% | 0.2179 | 0.3173 |
+| Pre-trained FinBERT | Sentiment | 74.36% | 0.7295 | 0.7508 |
+| Standard Fine-tuned FinBERT | Sentiment | 77.26% | 0.7456 | 0.7770 |
+| **Class-Weighted Fine-tuned FinBERT** | **Sentiment** | **80.17%** | **0.7868** | **0.8030** |
+| **Class-Weighted FinBERT** | **Aspect (ABSA)** | **88.59%** | **0.5429** | **0.8688** |
+
+---
 
 ## References
 
@@ -393,12 +445,28 @@ Actual:
    - Rosenthal, S., Farra, N., & Nakov, P. (2017). "SemEval-2017 Task 4: Sentiment Analysis in Twitter." *Proceedings of the 11th International Workshop on Semantic Evaluation (SemEval-2017)*, 502-518.
    - Liu, B. (2012). "Sentiment analysis and opinion mining." *Synthesis Lectures on Human Language Technologies*, 5(1), 1-167.
 
+6. **Aspect-Based Sentiment Analysis:**
+   - Yang, S., Rosenfeld, J., & Makutonin, J. (2018). "Financial Aspect-Based Sentiment Analysis using Deep Representations." *arXiv:1808.07931*.
+
+7. **FinBERT:**
+   - Araci, D. (2019). "FinBERT: Financial Sentiment Analysis with Pre-trained Language Models." *arXiv preprint arXiv:1908.10063*.
+
+8. **FiQA Dataset:**
+   - Maia, M., et al. (2018). "WWW'18 Open Challenge: Financial Opinion Mining and Question Answering." *Companion Proceedings of The Web Conference 2018*.
+
 ### Implementation
 
-6. **Scikit-learn Documentation:**
+9. **Scikit-learn Documentation:**
    - [Classification metrics](https://scikit-learn.org/stable/modules/model_evaluation.html#classification-metrics)
    - [sklearn.metrics.accuracy_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.accuracy_score.html)
    - [sklearn.metrics.precision_recall_fscore_support](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_fscore_support.html)
    - [sklearn.metrics.confusion_matrix](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.confusion_matrix.html)
+
+10. **HuggingFace Transformers:**
+    - [Transformers Documentation](https://huggingface.co/docs/transformers/)
+    - [ProsusAI/finbert](https://huggingface.co/ProsusAI/finbert)
+
+11. **FiQA Dataset on HuggingFace:**
+    - [pauri32/fiqa-2018](https://huggingface.co/datasets/pauri32/fiqa-2018)
 
 ---
