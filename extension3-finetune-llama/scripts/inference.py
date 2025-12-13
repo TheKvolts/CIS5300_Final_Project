@@ -1,4 +1,5 @@
 import torch
+import os
 import argparse
 import json
 import pandas as pd
@@ -161,6 +162,39 @@ def evaluate_file(model, tokenizer, test_file, output_file):
     df = pd.DataFrame(results)
     df.to_csv(output_file, index=False)
     print(f"Detailed CSV saved to {output_file}")
+
+    # --- Output for scoring.py ---
+    scoring_output_dir = "output/extension3-llama"
+    os.makedirs(scoring_output_dir, exist_ok=True)
+    scoring_output_file = os.path.join(scoring_output_dir, "predictions.csv")
+    
+    print(f"Generating scoring-compatible CSV at {scoring_output_file}...")
+    
+    # Map string labels back to integers
+    # Note: We need to handle potential unmapped labels if model output was garbage
+    # But normalize_label should handle most cases.
+    
+    scoring_df = df.copy()
+    scoring_df['Predicted_Label'] = scoring_df['predicted_label'].map(LABEL_MAP)
+    scoring_df['Label'] = scoring_df['true_label'].map(LABEL_MAP)
+    
+    # Handle any unmapped values (fill with -1 or a default class like neutral=1)
+    if scoring_df['Predicted_Label'].isnull().any():
+        print("Warning: Some predicted labels could not be mapped to integers. Defaulting to -1.")
+        scoring_df['Predicted_Label'] = scoring_df['Predicted_Label'].fillna(-1).astype(int)
+    else:
+        scoring_df['Predicted_Label'] = scoring_df['Predicted_Label'].astype(int)
+
+    if scoring_df['Label'].isnull().any():
+         print("Warning: Some true labels could not be mapped to integers. Defaulting to -1.")
+         scoring_df['Label'] = scoring_df['Label'].fillna(-1).astype(int)
+    else:
+         scoring_df['Label'] = scoring_df['Label'].astype(int)
+        
+    # We output both Predicted_Label and Label so this file can be used as both arguments to scoring.py if desired
+    scoring_df[['Predicted_Label', 'Label']].to_csv(scoring_output_file, index=False)
+    print(f"Saved predictions to {scoring_output_file}")
+    # ----------------------------------
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
