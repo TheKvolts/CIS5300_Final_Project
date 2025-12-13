@@ -117,8 +117,6 @@ def evaluate_file(model, tokenizer, test_file, output_file):
         
         # 3. Clean Prediction (Normalize)
         predicted_label = normalize_label(raw_prediction)
-        # Handle the case where the file has 'negative'/'positive' sentiment labels
-        # We try to normalize them, but if they are sentiment, they won't match "Fox News"
         true_label = normalize_label(raw_true_label)
         
         # 4. Collect for Metrics
@@ -164,16 +162,12 @@ def evaluate_file(model, tokenizer, test_file, output_file):
     print(f"Detailed CSV saved to {output_file}")
 
     # --- Output for scoring.py ---
-    scoring_output_dir = "output/extension3-llama"
+    scoring_output_dir = "/home/ubuntu/CIS5300_Final_Project/output/extension3-llama"
     os.makedirs(scoring_output_dir, exist_ok=True)
     scoring_output_file = os.path.join(scoring_output_dir, "predictions.csv")
     
     print(f"Generating scoring-compatible CSV at {scoring_output_file}...")
-    
-    # Map string labels back to integers
-    # Note: We need to handle potential unmapped labels if model output was garbage
-    # But normalize_label should handle most cases.
-    
+
     scoring_df = df.copy()
     scoring_df['Predicted_Label'] = scoring_df['predicted_label'].map(LABEL_MAP)
     scoring_df['Label'] = scoring_df['true_label'].map(LABEL_MAP)

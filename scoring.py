@@ -44,9 +44,12 @@ def load_gold_labels(gold_file):
     """
     if gold_file.endswith('.csv'):
         df = pd.read_csv(gold_file)
-        if 'Label' not in df.columns:
+        if 'Label' in df.columns:
+            return df['Label'].values
+        elif 'label' in df.columns:
+            return df['label'].values
+        else:
             raise ValueError("Gold standard CSV must contain 'Label' column")
-        return df['Label'].values
     else:
         # Assume one label per line
         with open(gold_file, 'r') as f:

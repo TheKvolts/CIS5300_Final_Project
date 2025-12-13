@@ -304,7 +304,7 @@ Fine-tuning FinBERT on our training dataset with standard cross-entropy loss.
 
 ---
 
-### MS3 Extension 2: Class-Weighted Fine-tuned FinBERT
+### MS3 Extension 1: Class-Weighted Fine-tuned FinBERT
 #### Overview
 Fine-tuning FinBERT with inverse frequency class weighting to address class imbalance (Negative: 2.29, Neutral: 0.61, Positive: 1.07).
 
@@ -328,7 +328,44 @@ Per-class F1 comparison:
 
 ---
 
-## Task 2: Aspect Classification (ABSA Extension)
+## Task 2: Fine-Tuned Llama Model
+
+Accuracy: 0.8256
+
+------------------------------------------------------------
+AGGREGATE METRICS
+------------------------------------------------------------
+Macro-averaged Precision:  0.8113
+Macro-averaged Recall:     0.7468
+Macro-averaged F1:         0.7633
+
+Weighted-averaged Precision: 0.8213
+Weighted-averaged Recall:    0.8256
+Weighted-averaged F1:        0.8142
+
+------------------------------------------------------------
+PER-CLASS METRICS
+------------------------------------------------------------
+Class        Precision    Recall       F1           Support     
+------------------------------------------------------------
+Negative     0.7368       0.4200       0.5350       100         
+Neutral      0.7908       0.9049       0.8440       284         
+Positive     0.9064       0.9154       0.9109       201         
+
+------------------------------------------------------------
+CONFUSION MATRIX
+------------------------------------------------------------
+         Predicted:
+           Neg    Neu    Pos
+Actual:
+  Neg       42     56      2
+  Neu       10    257     17
+  Pos        5     12    184
+============================================================
+
+---
+
+## Task 3: Aspect Classification (ABSA Extension)
 
 ### Overview
 This extension applies our approach to a new task: **Aspect-Based Sentiment Analysis (ABSA)** using the FiQA dataset from WWW'18. Instead of predicting sentiment, we classify financial text into one of four aspect categories.
