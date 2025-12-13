@@ -177,7 +177,7 @@ Per-class performance:
 
 ## Extension 3: Fine-Tuned Llama Model
 
-We have implemented a fine-tuned **Llama 3.1 8B** model for classifying news sources (Fox News vs. NBC News) using QLoRA. For a high-level overview of our approach, see [APPROACH.md](finetune-llm-ec2/APPROACH.md).
+We have implemented a fine-tuned **Llama 3.1 8B** model for classifying the sentiment of news headlines using QLoRA.
 
 ### Directory Structure
 The fine-tuning logic is located in `finetune-llm-ec2/`:
