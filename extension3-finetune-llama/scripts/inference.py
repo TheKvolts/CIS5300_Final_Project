@@ -11,8 +11,9 @@ from sklearn.metrics import accuracy_score, classification_report
 
 # Define label mapping (Must match your training logic)
 LABEL_MAP = {
-    "NBC News": 0,
-    "Fox News": 1
+    "negative": 0,
+    "neutral": 1,
+    "positive": 2
 }
 
 def load_model(base_model_id, adapter_path):
@@ -47,17 +48,24 @@ def normalize_label(label):
     
     label = label.strip().lower()
     
-    # Map to canonical class names if needed
-    if "fox" in label:
-        return "Fox News"
-    if "nbc" in label:
-        return "NBC News"
+    # Map to canonical class names
+    if "neg" in label:
+        return "negative"
+    if "neu" in label:
+        return "neutral"
+    if "pos" in label:
+        return "positive"
         
-    return label.title() # Default fallback
+    return label # Default fallback
 
 def predict(model, tokenizer, headline):
     # Concise system prompt aligned with data preparation style
-    system_prompt = "You are a media bias analyst. Analyze the provided news headline and classify the source as 'Fox News' or 'NBC News'. Output ONLY the source label."
+    system_prompt = (
+        "You are a financial sentiment analysis expert. "
+        "Analyze the provided financial news headline and classify the sentiment "
+        "as 'positive', 'neutral', or 'negative'. "
+        "Output ONLY the sentiment label."
+    )
     
     messages = [
         {"role": "system", "content": system_prompt},
