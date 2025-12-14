@@ -4,11 +4,11 @@ This document describes the evaluation metrics used to assess the performance of
 
 ---
 
-## Task 1: Sentiment Classification (3-class)
+## Task 1: Sentiment Classification (3-class) - Baselines, Extension 1, Extension 2
 
 The primary task is a **3-class sentiment classification** problem with classes: negative (0), neutral (1), and positive (2).
 
-## Task 2: Aspect Classification (4-class) - ABSA Extension
+## Task 2: Aspect Classification (4-class) - ABSA Extension 3
 
 The extension task is a **4-class aspect classification** problem using the FiQA dataset, with classes: Corporate (0), Economy (1), Market (2), and Stock (3).
 
@@ -328,7 +328,7 @@ Per-class F1 comparison:
 
 ---
 
-## Task 2: Fine-Tuned Llama Model
+## Extension 2: Fine-Tuned Llama Model
 
 Accuracy: 0.8256
 
@@ -365,7 +365,7 @@ Actual:
 
 ---
 
-## Task 3: Aspect Classification (ABSA Extension)
+## Extension 3: Aspect Classification (ABSA Extension)
 
 ### Overview
 This extension applies our approach to a new task: **Aspect-Based Sentiment Analysis (ABSA)** using the FiQA dataset from WWW'18. Instead of predicting sentiment, we classify financial text into one of four aspect categories.

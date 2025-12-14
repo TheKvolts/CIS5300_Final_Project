@@ -115,7 +115,42 @@ Refer to milestone 2, simple-baseline.md and strong-baseline.md for reference.
 
 ---
 
-## Extension 2: Aspect-Based Sentiment Analysis (ABSA)
+## Extension 2: Fine-Tuned Llama Model
+
+We have implemented a fine-tuned **Llama 3.1 8B** model for classifying the sentiment of news headlines using QLoRA.
+
+### Directory Structure
+The fine-tuning logic is located in `extension3-finetune-llama/`:
+- `data/`: Contains converted JSONL datasets.
+- `scripts/`: Training and inference scripts.
+- `prepare_data.py`: Converts raw CSVs to JSONL format.
+
+### How to Run
+
+1.  **Prepare Data**:
+    ```bash
+    python extension3-finetune-llama/prepare_data.py
+    ```
+
+2.  **Train Model**:
+    ```bash
+    python extension3-finetune-llama/scripts/train.py --hf_token "YOUR_TOKEN" --epochs 3
+    ```
+    This saves the adapter to `./final_adapter`.
+
+3.  **Run Inference**:
+    Evaluate on test data:
+    ```bash
+    python extension3-finetune-llama/scripts/inference.py --test_file "extension3-finetune-llama/data/test.jsonl"
+    ```
+    or test a single headline:
+    ```bash
+    python extension3-finetune-llama/scripts/inference.py --headline "Example news headline..."
+    ```
+
+---
+
+## Extension 3: Aspect-Based Sentiment Analysis (ABSA)
 
 ### Overview
 
@@ -172,41 +207,6 @@ Per-class performance:
 | Stock | 0.89 | 0.95 | 0.92 | 74 |
 
 **Key Findings**: The model achieves strong performance on majority classes (Corporate: 0.92 F1, Stock: 0.92 F1) but struggles with minority classes due to extreme data imbalance. Economy (only 4 training examples) was never predicted correctly, demonstrating the fundamental limitation that class weighting cannot overcome severe data scarcity.
-
----
-
-## Extension 3: Fine-Tuned Llama Model
-
-We have implemented a fine-tuned **Llama 3.1 8B** model for classifying the sentiment of news headlines using QLoRA.
-
-### Directory Structure
-The fine-tuning logic is located in `extension3-finetune-llama/`:
-- `data/`: Contains converted JSONL datasets.
-- `scripts/`: Training and inference scripts.
-- `prepare_data.py`: Converts raw CSVs to JSONL format.
-
-### How to Run
-
-1.  **Prepare Data**:
-    ```bash
-    python extension3-finetune-llama/prepare_data.py
-    ```
-
-2.  **Train Model**:
-    ```bash
-    python extension3-finetune-llama/scripts/train.py --hf_token "YOUR_TOKEN" --epochs 3
-    ```
-    This saves the adapter to `./final_adapter`.
-
-3.  **Run Inference**:
-    Evaluate on test data:
-    ```bash
-    python extension3-finetune-llama/scripts/inference.py --test_file "extension3-finetune-llama/data/test.jsonl"
-    ```
-    or test a single headline:
-    ```bash
-    python extension3-finetune-llama/scripts/inference.py --headline "Example news headline..."
-    ```
 
 ---
 
