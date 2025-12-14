@@ -454,7 +454,8 @@ Actual:
 | Simple Baseline (Majority Class) | Sentiment | 48.55% | 0.2179 | 0.3173 |
 | Pre-trained FinBERT | Sentiment | 74.36% | 0.7295 | 0.7508 |
 | Standard Fine-tuned FinBERT | Sentiment | 77.26% | 0.7456 | 0.7770 |
-| **Class-Weighted Fine-tuned FinBERT** | **Sentiment** | **80.17%** | **0.7868** | **0.8030** |
+| Class-Weighted Fine-tuned FinBERT | Sentiment | 80.17% | **0.7868** | 0.8030 |
+| **Fine-tuned LLM** | **Sentiment** | **82.56%** | 0.7633 | **0.8142** |
 | **Class-Weighted FinBERT** | **Aspect (ABSA)** | **88.59%** | **0.5429** | **0.8688** |
 
 ---

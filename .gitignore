@@ -5,6 +5,6 @@ env/
 .env/
 ENV/
 .ENV/
-extension3-finetune-llama/scripts/command.txt
-extension3-finetune-llama/checkpoints
-extension3-finetune-llama/final_adapter
+extension2-finetune-llama/scripts/command.txt
+extension2-finetune-llama/checkpoints
+extension2-finetune-llama/final_adapter
