@@ -80,9 +80,19 @@ python scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/tes
 
 ## Extension 1: Fine-Tuned FinBERT (Sentiment Classification)
 
-### How to Use the Code
+### Extension Description
 
-The fine-tuning implementation is provided in `milestone3_finetune_extension.ipynb`, a Google Colab notebook which our group ran using Google Colab and Google Drive. To run the code:
+For Milestone 3, we extended our Milestone 2 strong baseline (pre-trained FinBERT) by fine-tuning the model on our Financial PhraseBank training dataset using a standard transformer classification head optimized with cross-entropy loss. While the Milestone 2 baseline used FinBERT out-of-the-box without any training on our data, this extension adapts all model parameters through supervised training on our specific sentiment classification task.
+
+We implemented 4 different fine-tuning strategies:
+- **Strategy 1a: Standard Fine-tuning** - Standard supervised learning with cross-entropy loss, training all model parameters end-to-end. Trained for 5 epochs with learning rate 2e-5, batch size 16, and early stopping based on development set F1-macro score.
+- **Strategy 1b: Class-Balanced Fine-tuning** - Addresses class imbalance (Negative: 14.53%, Neutral: 54.29%, Positive: 31.18%) by applying inverse frequency class weighting to the loss function. Uses learning rate 3e-5, 10 epochs, gradient accumulation (effective batch size 32), warmup steps, gradient clipping, and mixed precision training.
+- **Strategy 1c: Focal Loss** - Uses focal loss (gamma=2.0) with class weights to focus on hard-to-classify examples. Same hyperparameters as Strategy 1b.
+- **Strategy 1d: Discriminative Fine-tuning** - Applies layer-wise learning rate decay (95% per layer) with class-weighted loss. Different learning rates for different model layers, with classifier head having the highest learning rate.
+
+### .ipynb Version for Colab (Used for Actual Milestone Submissions)
+
+The fine-tuning implementation is provided in `code/originalnotebooks/milestone3_finetune_extension_additions.ipynb`, a Google Colab notebook which our group ran using Google Colab and Google Drive. To run the code:
 
 1. **Setup**: Open the notebook in Google Colab and mount your Google Drive containing the project directory. The notebook will automatically install required packages (transformers, datasets, torch, scikit-learn, pandas, numpy, matplotlib, seaborn, tqdm, accelerate).
 
@@ -100,16 +110,70 @@ The fine-tuning implementation is provided in `milestone3_finetune_extension.ipy
    - Save predictions to CSV files in the `output/` directory
 
 4. **Output Files**: After execution, predictions are saved as:
-   - `output/ms3_strong_baseline_predictions_standard.csv` (Attempt 1)
-   - `output/improved_strong_baseline_predictions.csv` (Attempt 2)
+   - `output/ms3_strong_baseline_predictions_standard.csv` (Strategy 1a)
+   - `output/improved_strong_baseline_predictions.csv` (Strategy 1b)
 
-### Extension Description
+### Script Version: Reformatted for Final Submission
 
-For Milestone 3, we extended our Milestone 2 strong baseline (pre-trained FinBERT) by fine-tuning the model on our Financial PhraseBank training dataset using a standard transformer classification head optimized with cross-entropy loss. While the Milestone 2 baseline used FinBERT out-of-the-box without any training on our data, this extension adapts all model parameters through supervised training on our specific sentiment classification task.
+A command-line script version is available in `code/extension1/train_extension1.py` for easier reproduction and final submission.
 
-**Attempt 1: Standard Fine-tuning** applies standard supervised learning with cross-entropy loss, training all model parameters end-to-end on our training data. The model is trained for 5 epochs with a learning rate of 2e-5, batch size of 16, and early stopping based on development set F1-macro score.
+#### Prerequisites
 
-**Attempt 2: Class-Weighted Fine-tuning** addresses the class imbalance in our dataset (Negative: 14.53%, Neutral: 54.29%, Positive: 31.18% in training set) by applying inverse frequency class weighting to the loss function. This approach assigns higher weights to underrepresented classes (especially Negative sentiment) during training, forcing the model to pay more attention to minority class examples. Additionally, we increased the learning rate to 3e-5, extended training to 10 epochs, added gradient accumulation (effective batch size 32), warmup steps, gradient clipping, and mixed precision training for improved performance.
+```bash
+pip install transformers datasets torch scikit-learn pandas numpy
+```
+
+#### Running the Script
+
+**Train all strategies:**
+```bash
+python code/extension1/train_extension1.py --all
+```
+
+**Train specific strategy:**
+```bash
+# Strategy 1a: Standard fine-tuning
+python code/extension1/train_extension1.py --strategy 1a
+
+# Strategy 1b: Class-balanced fine-tuning
+python code/extension1/train_extension1.py --strategy 1b
+
+# Strategy 1c: Focal loss
+python code/extension1/train_extension1.py --strategy 1c
+
+# Strategy 1d: Discriminative fine-tuning
+python code/extension1/train_extension1.py --strategy 1d
+```
+
+#### Output Files
+
+Predictions are saved to `output/extension1(milestone3)/`:
+- `strategy1a_standard_finetuned_predictions.csv`
+- `strategy1b_class_balanced_finetuned_predictions.csv`
+- `strategy1c_focal_loss_predictions.csv`
+- `strategy1d_discriminative_finetuning_predictions.csv`
+
+Each CSV contains: `Sentence`, `Predicted` (0/1/2), `Gold` (true label).
+
+#### Evaluation
+
+Evaluate predictions using `scoring.py`:
+
+```bash
+# Evaluate Strategy 1a
+python scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
+
+# Evaluate Strategy 1b
+python scoring.py output/extension1\(milestone3\)/strategy1b_class_balanced_finetuned_predictions.csv data/test/test.csv
+
+# Evaluate Strategy 1c
+python scoring.py output/extension1\(milestone3\)/strategy1c_focal_loss_predictions.csv data/test/test.csv
+
+# Evaluate Strategy 1d
+python scoring.py output/extension1\(milestone3\)/strategy1d_discriminative_finetuning_predictions.csv data/test/test.csv
+```
+
+For more detailed instructions, see `code/README.md`.
 
 Refer to milestone 2, simple-baseline.md and strong-baseline.md for reference.
 

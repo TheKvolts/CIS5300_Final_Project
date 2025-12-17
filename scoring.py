@@ -26,6 +26,8 @@ def load_predictions(pred_file):
         df = pd.read_csv(pred_file)
         if 'Predicted_Label' in df.columns:
             return df['Predicted_Label'].values
+        elif 'Predicted' in df.columns:
+            return df['Predicted'].values
         elif 'Label' in df.columns:
             return df['Label'].values
         else:

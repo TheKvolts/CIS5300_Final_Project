@@ -1,10 +1,116 @@
-# Virtual environments
+# ============================================================================
+# Python
+# ============================================================================
+# Virtual environments (covers all venv directories including subdirectories)
 venv/
 .venv/
 env/
 .env/
 ENV/
 .ENV/
-extension2-finetune-llama/scripts/command.txt
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ============================================================================
+# Jupyter Notebooks
+# ============================================================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ============================================================================
+# IDE
+# ============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# ============================================================================
+# Environment variables
+# ============================================================================
+.env
+.env.local
+.env.*.local
+
+# ============================================================================
+# Logs
+# ============================================================================
+*.log
+logs/
+
+# ============================================================================
+# Model cache and checkpoints
+# ============================================================================
+# Hugging Face cache
+.cache/
+.cache_huggingface/
+models/
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Training checkpoints
 extension2-finetune-llama/checkpoints
 extension2-finetune-llama/final_adapter
+extension2-finetune-llama/scripts/command.txt
+
+# ============================================================================
+# Streamlit
+# ============================================================================
+.streamlit/secrets.toml
+
+# ============================================================================
+# Testing
+# ============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ============================================================================
+# Temporary files
+# ============================================================================
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# ============================================================================
+# OS
+# ============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
