@@ -68,11 +68,11 @@ We also report **Accuracy** and **Weighted F1-score** for completeness.
 ## Usage
 
 ### Command Line Interface
-Run the evaluation script `scoring.py` with the predictions and gold labels.
+Run the evaluation script `code/scoring.py` with the predictions and gold labels.
 
 #### Syntax
 ```bash
-python scoring.py <predictions_file> <gold_labels_file> [options]
+python code/scoring.py <predictions_file> <gold_labels_file> [options]
 ```
 
 #### Arguments
@@ -85,17 +85,17 @@ python scoring.py <predictions_file> <gold_labels_file> [options]
 
 **1. Basic Evaluation (Text Output)**
 ```bash
-python scoring.py predictions.csv data/test/test.csv
+python code/scoring.py predictions.csv data/test/test.csv
 ```
 
 **2. JSON Output to File**
 ```bash
-python scoring.py predictions.csv data/test/test.csv --format json --output results.json
+python code/scoring.py predictions.csv data/test/test.csv --format json --output results.json
 ```
 
 **3. Using Text Files (One label per line)**
 ```bash
-python scoring.py my_predictions.txt gold_labels.txt
+python code/scoring.py my_predictions.txt gold_labels.txt
 ```
 
 ---
@@ -181,9 +181,9 @@ sentence,Predicted_Label
 "Stock price falls sharply",0
 ```
 
-3. **Evaluate using scoring.py:**
+3. **Evaluate using code/scoring.py:**
 ```bash
-python scoring.py predictions_processed.csv data/test/test.csv
+python code/scoring.py predictions_processed.csv data/test/test.csv
 ```
 
 ### Complete Pipeline Example
@@ -195,7 +195,7 @@ You can chain the preprocessing and evaluation steps:
 python preprocess_predictions.py finbert_output.csv -o predictions_std.csv
 
 # Evaluate
-python scoring.py predictions_std.csv data/test/test.csv --format json --output results.json
+python code/scoring.py predictions_std.csv data/test/test.csv --format json --output results.json
 ```
 
 ### Label Mapping Reference

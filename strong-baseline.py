@@ -23,7 +23,7 @@ test_df['predicted_sentiment'] = predicted_labels
 print("Predictions completed and stored in 'predicted_sentiment' column.")
 print(test_df[['Sentence', 'Sentiment', 'predicted_sentiment']].head())
 
-# Storing outputs for scoring.py
+# Storing outputs for code/scoring.py
 label_mapping = {'negative': 0, 'neutral': 1, 'positive': 2}
 
 # Create 'test_sentence_label.csv'

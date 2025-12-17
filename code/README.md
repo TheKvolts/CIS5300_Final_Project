@@ -93,20 +93,20 @@ Each CSV file contains:
 
 ### Evaluation
 
-Use `scoring.py` to evaluate the predictions:
+Use `code/scoring.py` to evaluate the predictions:
 
 ```bash
 # Evaluate Strategy 1a
-python scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
 
 # Evaluate Strategy 1b
-python scoring.py output/extension1\(milestone3\)/strategy1b_class_balanced_finetuned_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1b_class_balanced_finetuned_predictions.csv data/test/test.csv
 
 # Evaluate Strategy 1c
-python scoring.py output/extension1\(milestone3\)/strategy1c_focal_loss_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1c_focal_loss_predictions.csv data/test/test.csv
 
 # Evaluate Strategy 1d
-python scoring.py output/extension1\(milestone3\)/strategy1d_discriminative_finetuning_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1d_discriminative_finetuning_predictions.csv data/test/test.csv
 ```
 
 ### Strategy Details
@@ -181,10 +181,10 @@ python scoring.py output/extension1\(milestone3\)/strategy1d_discriminative_fine
 
 ## Evaluation Script
 
-The `scoring.py` script in the project root evaluates predictions:
+The `code/scoring.py` script evaluates predictions:
 
 ```bash
-python scoring.py <predictions_file> <gold_labels_file>
+python code/scoring.py <predictions_file> <gold_labels_file>
 ```
 
 The predictions file should be a CSV with a `Predicted` column (or `Predicted_Label` or `Label`).
@@ -192,6 +192,6 @@ The gold labels file should be a CSV with a `Label` or `label` column.
 
 Example:
 ```bash
-python scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
 ```
 

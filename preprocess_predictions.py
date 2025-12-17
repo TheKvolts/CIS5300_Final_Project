@@ -1,6 +1,6 @@
 """
 Preprocessing script to convert various prediction formats to the standard format
-expected by scoring.py
+expected by code/scoring.py
 
 This script handles:
 - finBERT output format (string labels: "positive", "negative", "neutral")

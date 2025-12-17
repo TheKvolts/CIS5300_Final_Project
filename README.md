@@ -45,9 +45,9 @@ This creates two files with two columns- Sentence and Label:
 - simple_baseline_test_predictions.csv
 - test_sentence_label.csv
 
-These files should be used by `scoring.py`.
+These files should be used by `code/scoring.py`.
 ```bash
-python scoring.py milestone2/simple_baseline_test_predictions.csv milestone2/test_sentence_label.csv
+python code/scoring.py milestone2/simple_baseline_test_predictions.csv milestone2/test_sentence_label.csv
 ```
 
 ---
@@ -71,9 +71,9 @@ This creates two files with two columns- Sentence and Label:
 - strong_baseline_test_predictions.csv
 - test_sentence_label.csv
 
-These files should be used by `scoring.py`.
+These files should be used by `code/scoring.py`.
 ```bash
-python scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/test_sentence_label.csv
+python code/scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/test_sentence_label.csv
 ```
 
 ---
@@ -157,20 +157,20 @@ Each CSV contains: `Sentence`, `Predicted` (0/1/2), `Gold` (true label).
 
 #### Evaluation
 
-Evaluate predictions using `scoring.py`:
+Evaluate predictions using `code/scoring.py`:
 
 ```bash
 # Evaluate Strategy 1a
-python scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
 
 # Evaluate Strategy 1b
-python scoring.py output/extension1\(milestone3\)/strategy1b_class_balanced_finetuned_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1b_class_balanced_finetuned_predictions.csv data/test/test.csv
 
 # Evaluate Strategy 1c
-python scoring.py output/extension1\(milestone3\)/strategy1c_focal_loss_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1c_focal_loss_predictions.csv data/test/test.csv
 
 # Evaluate Strategy 1d
-python scoring.py output/extension1\(milestone3\)/strategy1d_discriminative_finetuning_predictions.csv data/test/test.csv
+python code/scoring.py output/extension1\(milestone3\)/strategy1d_discriminative_finetuning_predictions.csv data/test/test.csv
 ```
 
 For more detailed instructions, see `code/README.md`.

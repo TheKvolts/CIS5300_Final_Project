@@ -122,4 +122,4 @@ if __name__ == "__main__":
     predict_majority_baseline(test_file, majority_class, prefix)
     
     print("\nTo evaluate, run:")
-    print(f"python scoring.py {prefix}/simple_baseline_test_predictions.csv {prefix}/test_sentence_label.csv")
+    print(f"python code/scoring.py {prefix}/simple_baseline_test_predictions.csv {prefix}/test_sentence_label.csv")

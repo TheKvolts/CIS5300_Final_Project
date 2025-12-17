@@ -8,7 +8,7 @@ This script trains 4 different fine-tuning strategies for financial sentiment an
 - Strategy 1c: Focal loss
 - Strategy 1d: Discriminative fine-tuning
 
-Outputs predictions in format compatible with scoring.py
+Outputs predictions in format compatible with code/scoring.py
 """
 
 import argparse
@@ -630,11 +630,11 @@ def main():
     print("TRAINING COMPLETE!")
     print("=" * 70)
     print(f"\nPredictions saved to: {args.output_dir}/")
-    print("\nTo evaluate with scoring.py, run:")
-    print(f"  python scoring.py {args.output_dir}/strategy1a_standard_finetuned_predictions.csv {test_file}")
-    print(f"  python scoring.py {args.output_dir}/strategy1b_class_balanced_finetuned_predictions.csv {test_file}")
-    print(f"  python scoring.py {args.output_dir}/strategy1c_focal_loss_predictions.csv {test_file}")
-    print(f"  python scoring.py {args.output_dir}/strategy1d_discriminative_finetuning_predictions.csv {test_file}")
+    print("\nTo evaluate with code/scoring.py, run:")
+    print(f"  python code/scoring.py {args.output_dir}/strategy1a_standard_finetuned_predictions.csv {test_file}")
+    print(f"  python code/scoring.py {args.output_dir}/strategy1b_class_balanced_finetuned_predictions.csv {test_file}")
+    print(f"  python code/scoring.py {args.output_dir}/strategy1c_focal_loss_predictions.csv {test_file}")
+    print(f"  python code/scoring.py {args.output_dir}/strategy1d_discriminative_finetuning_predictions.csv {test_file}")
 
 
 if __name__ == '__main__':
