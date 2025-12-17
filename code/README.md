@@ -6,11 +6,90 @@ This directory contains all code developed for the project, including baselines,
 
 ```
 code/
+├── evaluation scripts
 ├── baselines/          # Baseline implementations
 ├── extension1/         # Extension 1: Fine-Tuned FinBERT
 ├── extension2/        # Extension 2: Fine-Tuned Llama
 ├── extension3/        # Extension 3: Aspect-Based Sentiment Analysis
 └── originalnotebooks/ # Original Jupyter notebooks (for reference)
+```
+
+---
+
+## Setup
+
+To set up the project environment:
+
+1. Create a virtual environment:
+   ```bash
+   python -m venv venv
+   ```
+
+2. Activate the virtual environment:
+   - On macOS/Linux:
+     ```bash
+     source venv/bin/activate
+     ```
+   - On Windows:
+     ```bash
+     venv\Scripts\activate
+     ```
+
+3. Install the required dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+## Simple Baseline
+This baseline uses a majority class predictor that predicts the most frequent sentiment class from the training data for all test examples. It **completely ignores the input text** and always predicts the same class, regardless of the headline content. This serves as a simple, lower-bound baseline to establish the minimum performance threshold for the task.
+
+- Test set size: 585 examples. (refer to data.md)
+
+| Sentence                                                                 | Sentiment | Label |
+|--------------------------------------------------------------------------|:---------:|:-----:|
+| The inventors are Mukkavilli Krishna Kiran, Sabharwal Ashutosh and Aazhang Behnaam. | neutral   |   1   |
+| $IBIO up 10% in premarket ready for lift off                             | positive  |   2   |
+
+### Running the script
+```bash
+python simple-baseline.py
+```
+
+This creates two files with two columns- Sentence and Label:
+- simple_baseline_test_predictions.csv
+- test_sentence_label.csv
+
+These files should be used by `code/scoring.py`.
+```bash
+python code/scoring.py milestone2/simple_baseline_test_predictions.csv milestone2/test_sentence_label.csv
+```
+
+---
+
+## Strong Baseline
+This baseline uses the [FinBERT](https://huggingface.co/ProsusAI/finbert) text-classification pipeline from HuggingFace to predict financial sentiment (negative / neutral / positive). It serves as a strong, reproducible baseline for the task and includes inference and evaluation instructions.
+
+- Test set size: 585 examples. (refer to data.md)
+
+| Sentence                                                                 | Sentiment | Label |
+|--------------------------------------------------------------------------|:---------:|:-----:|
+| The inventors are Mukkavilli Krishna Kiran, Sabharwal Ashutosh and Aazhang Behnaam. | neutral   |   1   |
+| $IBIO up 10% in premarket ready for lift off                             | positive  |   2   |
+
+### Running the script
+```bash
+python strong-baseline.py
+```
+
+This creates two files with two columns- Sentence and Label:
+- strong_baseline_test_predictions.csv
+- test_sentence_label.csv
+
+These files should be used by `code/scoring.py`.
+```bash
+python code/scoring.py milestone2/strong_baseline_test_predictions.csv milestone2/test_sentence_label.csv
 ```
 
 ---
@@ -163,35 +242,77 @@ python code/scoring.py output/extension1\(milestone3\)/strategy1d_discriminative
 
 ## Extension 2: Fine-Tuned Llama
 
-(Add instructions when available)
+We have implemented a fine-tuned **Llama 3.1 8B** model for classifying the sentiment of news headlines using QLoRA.
+
+### Directory Structure
+The fine-tuning logic is located in `extension2-finetune-llama/`:
+- `data/`: Contains converted JSONL datasets.
+- `scripts/`: Training and inference scripts.
+- `prepare_data.py`: Converts raw CSVs to JSONL format.
+
+### How to Run
+
+1.  **Prepare Data**:
+    ```bash
+    python extension2-finetune-llama/prepare_data.py
+    ```
+
+2.  **Train Model**:
+    ```bash
+    python extension2-finetune-llama/scripts/train.py --hf_token "YOUR_TOKEN" --epochs 3
+    ```
+    This saves the adapter to `./final_adapter`.
+
+3.  **Run Inference**:
+    Evaluate on test data:
+    ```bash
+    python extension2-finetune-llama/scripts/inference.py --test_file "extension2-finetune-llama/data/test.jsonl"
+    ```
+    or test a single headline:
+    ```bash
+    python extension2-finetune-llama/scripts/inference.py --headline "Example news headline..."
+    ```
 
 ---
 
 ## Extension 3: Aspect-Based Sentiment Analysis
 
-(Add instructions when available)
+### Overview
+
+This extension applies our FinBERT fine-tuning approach to a new task: **Aspect Classification** using the FiQA dataset from WWW'18. Instead of predicting sentiment (positive/neutral/negative), we classify financial text into one of four aspect categories:
+
+| Aspect | Description | Training Examples |
+|--------|-------------|-------------------|
+| Corporate | M&A, strategy, leadership, legal | 367 (38.2%) |
+| Economy | Macro trends, policy | 4 (0.4%) |
+| Market | Indices, sectors, broad market movements | 26 (2.7%) |
+| Stock | Price action, volatility, individual stocks | 562 (58.5%) |
+
+This extension is motivated by Yang et al. (2018), "Financial Aspect-Based Sentiment Analysis using Deep Representations," which demonstrated that aspect classification enables more granular analysis of financial text.
+
+### How to Use the Code
+
+The implementation is provided in `milestone4_absa_extension.ipynb`, a Google Colab notebook.
+
+1. **Setup**: Open the notebook in Google Colab. The notebook will automatically install required packages and load the FiQA dataset from HuggingFace (`pauri32/fiqa-2018`).
+
+2. **No Local Data Required**: Unlike the sentiment task, the FiQA dataset is loaded directly from HuggingFace:
+   ```python
+   from datasets import load_dataset
+   fiqa_dataset = load_dataset("pauri32/fiqa-2018")
+   ```
+
+3. **Execution**: Run all cells sequentially. The notebook will:
+   - Load and preprocess the FiQA dataset
+   - Extract Level-1 aspect labels from hierarchical aspect annotations
+   - Compute class weights to handle extreme imbalance
+   - Fine-tune FinBERT with class-weighted loss
+   - Evaluate on the test set
+   - Save predictions and confusion matrix to `output/`
+
+4. **Output Files**: After execution:
+   - `output/fiqa_aspect_distribution.png` - Class distribution visualization
+   - `output/fiqa_aspect_confusion_matrix.png` - Test set confusion matrix
+   - `output/fiqa_aspect_predictions.csv` - Model predictions
 
 ---
-
-## Baselines
-
-(Add instructions when available)
-
----
-
-## Evaluation Script
-
-The `code/scoring.py` script evaluates predictions:
-
-```bash
-python code/scoring.py <predictions_file> <gold_labels_file>
-```
-
-The predictions file should be a CSV with a `Predicted` column (or `Predicted_Label` or `Label`).
-The gold labels file should be a CSV with a `Label` or `label` column.
-
-Example:
-```bash
-python code/scoring.py output/extension1\(milestone3\)/strategy1a_standard_finetuned_predictions.csv data/test/test.csv
-```
-
